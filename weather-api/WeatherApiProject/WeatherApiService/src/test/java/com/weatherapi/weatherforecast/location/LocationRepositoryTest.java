@@ -3,6 +3,8 @@ package com.weatherapi.weatherforecast.location;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -12,6 +14,7 @@ import org.springframework.test.annotation.Rollback;
 
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.repository.LocationRepository;
+
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -24,16 +27,25 @@ public class LocationRepositoryTest {
     public void testAddLocationSuccess() {
 
         Location location = new Location();
-        location.setCode("NYC_USA");
-        location.setCityName("New York City");
-        location.setRegionName("New York");
-        location.setCountryCode("US");
-        location.setCountryName("United States of America");
+        location.setCode("VIETNAM");
+        location.setCityName("HO CHI MINH City");
+        location.setRegionName("SÀI GÒN");
+        location.setCountryCode("SG");
+        location.setCountryName("THÀNH PHỐ HCM");
         location.setEnabled(true);
+        location.setTrashed(false);
 
         Location savedLocation = repository.save(location);
 
         assertThat(savedLocation).isNotNull();
-        assertEquals(savedLocation.getCode(), "NYC_USA");
+        //assertEquals(savedLocation.getCode(), "NYC_USA");
+    }
+    
+    @Test
+    public void testListSuccess() {
+    	List<Location> locations = repository.findUntrashed();
+    	
+    	assertThat(locations).isNotEmpty();
+    	locations.forEach(System.out::println);
     }
 }

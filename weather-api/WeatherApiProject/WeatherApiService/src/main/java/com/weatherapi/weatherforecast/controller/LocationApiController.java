@@ -2,10 +2,12 @@ package com.weatherapi.weatherforecast.controller;
 
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,16 @@ public class LocationApiController {
 	    Location addLocation = locationService.addLocation(location);
 		URI uri = URI.create("/v1/locations/" + addLocation.getCode());
 		return ResponseEntity.created(uri).body(addLocation);
+	}
+	
+	@GetMapping
+	public ResponseEntity<?> listLocation() {
+		List<Location> list = locationService.listLocation();
+		
+		if(list.isEmpty()) {
+			return ResponseEntity.noContent().build(); // return 204: no content
+		}
+		return ResponseEntity.ok(list);
 	}
 
 }

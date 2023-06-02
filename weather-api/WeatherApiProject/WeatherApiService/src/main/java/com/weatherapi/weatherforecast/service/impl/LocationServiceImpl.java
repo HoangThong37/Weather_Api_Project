@@ -1,5 +1,7 @@
 package com.weatherapi.weatherforecast.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,11 @@ public class LocationServiceImpl implements ILocationService {
 	@Override
 	public Location addLocation(Location location) {
 		return repository.save(location);
+	}
+
+	@Override
+	public List<Location> listLocation() {
+		return repository.findUntrashed();
 	}
 
 }
