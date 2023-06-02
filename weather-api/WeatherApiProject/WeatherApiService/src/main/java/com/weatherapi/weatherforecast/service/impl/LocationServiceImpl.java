@@ -11,7 +11,7 @@ import com.weatherapi.weatherforecast.service.ILocationService;
 
 @Service
 public class LocationServiceImpl implements ILocationService {
-	
+
 	@Autowired
 	private LocationRepository repository;
 
@@ -23,6 +23,19 @@ public class LocationServiceImpl implements ILocationService {
 	@Override
 	public List<Location> listLocation() {
 		return repository.findUntrashed();
+	}
+
+	@Override
+	public Location get(String code) {
+		try {
+			if (code != null) {
+				Location location = repository.findByCode(code);
+				return location;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
