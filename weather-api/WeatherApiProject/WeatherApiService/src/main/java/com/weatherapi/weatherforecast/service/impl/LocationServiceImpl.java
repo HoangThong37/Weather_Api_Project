@@ -12,6 +12,7 @@ import com.weatherapi.weatherforecast.repository.LocationRepository;
 import com.weatherapi.weatherforecast.service.ILocationService;
 
 @Service
+@Transactional
 public class LocationServiceImpl implements ILocationService {
 
 	@Autowired
@@ -51,8 +52,9 @@ public class LocationServiceImpl implements ILocationService {
            throw new LocationNotFoundException("No location found with the given code" + locationRequest.getCode());
 		}
 		
+		locationInDB.setCode(locationRequest.getCode());
 		locationInDB.setCityName(locationRequest.getCityName());
-		locationInDB.setCountryCode(locationRequest.getCountryName());
+		locationInDB.setCountryCode(locationRequest.getCountryCode());
 		locationInDB.setCountryName(locationRequest.getCountryName());
 		locationInDB.setRegionName(locationRequest.getRegionName());
 		locationInDB.setEnabled(locationRequest.isEnabled());
@@ -60,4 +62,16 @@ public class LocationServiceImpl implements ILocationService {
 		return repository.save(locationInDB);
 	}
 
+	@Override
+	public void deletedLocation(String code) throws LocationNotFoundException {
+		try {
+			if (!repository.existsById(code)) {
+				throw new LocationNotFoundException("No Location not found with the given code : " + code);
+			}
+			repository.trashByCode(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error delete location service");
+		}
+	}
 }

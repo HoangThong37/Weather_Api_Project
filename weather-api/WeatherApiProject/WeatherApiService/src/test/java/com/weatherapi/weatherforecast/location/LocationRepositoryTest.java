@@ -27,11 +27,11 @@ public class LocationRepositoryTest {
 	public void testAddLocationSuccess() {
 
 		Location location = new Location();
-		location.setCode("VIETNAM");
-		location.setCityName("HO CHI MINH City");
-		location.setRegionName("SÀI GÒN");
-		location.setCountryCode("SG");
-		location.setCountryName("THÀNH PHỐ HCM");
+		location.setCode("test");
+		location.setCityName("test delete");
+		location.setRegionName("test delete");
+		location.setCountryCode("te");
+		location.setCountryName("Ttest deleteM");
 		location.setEnabled(true);
 		location.setTrashed(false);
 
@@ -64,5 +64,15 @@ public class LocationRepositoryTest {
 		
 		assertThat(location).isNotNull();
 		assertThat(location.getCode()).isEqualTo(code);
+	}
+	
+	// test delete
+	@Test
+	public void testDeleted() {
+		String code = "test";
+		repository.trashByCode(code);
+		
+	    Location location = repository.findByCode(code);
+	    assertThat(location).isNull();
 	}
 }

@@ -14,5 +14,7 @@ public interface ILocationService {
 	Location get(String code);
 	
 	Location updateLocation(Location location) throws LocationNotFoundException;
+	
+	void deletedLocation(String code) throws LocationNotFoundException;
 
 }

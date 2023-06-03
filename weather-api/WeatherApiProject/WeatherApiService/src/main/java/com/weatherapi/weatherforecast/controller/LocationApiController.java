@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,12 +53,23 @@ public class LocationApiController {
 		return ResponseEntity.ok(location);
 	}
 	
+	// update location
 	@PutMapping
 	public ResponseEntity<?> updateLocation(@RequestBody @Valid Location location) throws LocationNotFoundException {
 		try {
 			Location updateLocation = locationService.updateLocation(location);
 			return ResponseEntity.ok(updateLocation);
-			
+		} catch (Exception e) {
+			return ResponseEntity.notFound().build(); // return 204: no content
+		}
+	}
+	
+	// delete location
+	@DeleteMapping("/{code}")
+	public ResponseEntity<?> deleteLocation(@PathVariable(value = "code", required = false) String code) {
+		try {
+			locationService.deletedLocation(code);
+			return ResponseEntity.noContent().build(); // ko còn gtri
 		} catch (Exception e) {
 			return ResponseEntity.notFound().build(); // return 204: no content
 		}
