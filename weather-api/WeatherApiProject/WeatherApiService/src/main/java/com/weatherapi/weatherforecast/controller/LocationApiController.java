@@ -9,10 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.weatherapi.weatherforecast.common.Location;
+import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.ILocationService;
 
 import jakarta.validation.Valid;
@@ -49,5 +51,15 @@ public class LocationApiController {
 		}
 		return ResponseEntity.ok(location);
 	}
-
+	
+	@PutMapping
+	public ResponseEntity<?> updateLocation(@RequestBody @Valid Location location) throws LocationNotFoundException {
+		try {
+			Location updateLocation = locationService.updateLocation(location);
+			return ResponseEntity.ok(updateLocation);
+			
+		} catch (Exception e) {
+			return ResponseEntity.notFound().build(); // return 204: no content
+		}
+	}
 }
