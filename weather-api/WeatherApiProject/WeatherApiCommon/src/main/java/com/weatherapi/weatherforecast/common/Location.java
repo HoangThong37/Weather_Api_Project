@@ -1,6 +1,6 @@
 package com.weatherapi.weatherforecast.common;
 
-import java.util.Objects;
+ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,27 +18,26 @@ public class Location {
    
 	@Column(length = 12, nullable = false, unique = true)
 	@Id
-	@NotBlank
+	@NotBlank(message = "Location code can not blank")
 	private String code;
 	
 	@Column(length = 128, nullable = false)
 	@JsonProperty("city_name")
-	@NotBlank
+	@NotBlank(message = "City name can not blank")
 	private String cityName;     // tên thành phố
 	
 	@Column(length = 128)
 	@JsonProperty("region_name")
-	@NotNull
 	private String regionName;   // tên vùng
 	
 	@Column(length = 64, nullable = false)
 	@JsonProperty("country_name")
-	@NotBlank
+	@NotBlank(message = "Country name can not blank")
 	private String countryName;
 	
 	@Column(length = 2, nullable = false)
 	@JsonProperty("country_code")
-	@NotBlank
+	@NotBlank(message = "Country code can not blank")
 	private String countryCode;  // tên quốc gia 
 
 	private boolean enabled;

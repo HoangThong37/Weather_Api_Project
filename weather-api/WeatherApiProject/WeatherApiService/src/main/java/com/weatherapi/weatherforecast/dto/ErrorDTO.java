@@ -1,13 +1,15 @@
 package com.weatherapi.weatherforecast.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ErrorDTO {
 
 	private Date timestamp;
 	private int status;
 	private String path;
-	private String error;
+	private List<String> error = new ArrayList<>();
 
 	public Date getTimestamp() {
 		return timestamp;
@@ -29,16 +31,20 @@ public class ErrorDTO {
 		return path;
 	}
 
+	public List<String> getError() {
+		return error;
+	}
+
+	public void setError(List<String> error) {
+		this.error = error;
+	}
+
 	public void setPath(String path) {
 		this.path = path;
 	}
 
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
+	public void addError(String message) {
+		this.error.add(message);
 	}
 
 }
