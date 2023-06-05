@@ -7,9 +7,12 @@ import org.hibernate.validator.constraints.Length;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -50,6 +53,17 @@ public class Location {
 	
 	@JsonIgnore
 	private boolean trashed;  // bỏ thùng rác
+	
+	@OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
+	private RealtimeWeather realtimeWeather;
+	
+	public RealtimeWeather getRealtimeWeather() {
+		return realtimeWeather;
+	}
+	public void setRealtimeWeather(RealtimeWeather realtimeWeather) {
+		this.realtimeWeather = realtimeWeather;
+	}
 	
 	public String getCode() {
 		return code;
