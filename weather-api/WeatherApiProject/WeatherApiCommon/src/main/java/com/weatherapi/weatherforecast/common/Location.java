@@ -57,7 +57,19 @@ public class Location {
 	@OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private RealtimeWeather realtimeWeather;
+
+	public Location() {
+		
+	}
 	
+	public Location(String cityName, String regionName, String countryName, String countryCode) {
+		super();
+		this.cityName = cityName;
+		this.regionName = regionName;
+		this.countryName = countryName;
+		this.countryCode = countryCode;
+	}
+
 	public RealtimeWeather getRealtimeWeather() {
 		return realtimeWeather;
 	}
