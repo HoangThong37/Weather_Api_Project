@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
@@ -20,13 +20,13 @@ import com.weatherapi.weatherforecast.service.ILocationService;
 
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
 @RequestMapping("/v1/locations")
 public class LocationApiController {
 
-	@Autowired
-	private ILocationService locationService;
-
+    @Autowired
+	private  ILocationService locationService;
+	
 	@PostMapping
 	public ResponseEntity<Location> createLocation(@RequestBody @Valid Location location) {
 		Location addLocation = locationService.addLocation(location);

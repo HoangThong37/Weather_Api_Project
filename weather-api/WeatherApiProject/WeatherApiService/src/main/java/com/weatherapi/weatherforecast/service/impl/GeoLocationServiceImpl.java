@@ -10,11 +10,11 @@ import com.ip2location.IP2Location;
 import com.ip2location.IPResult;
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
-import com.weatherapi.weatherforecast.service.GeoLocationService;
+import com.weatherapi.weatherforecast.service.IGeoLocationService;
 
 @Service
-public class GeoLocationServiceImpl implements GeoLocationService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GeoLocationService.class);
+public class GeoLocationServiceImpl implements IGeoLocationService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(IGeoLocationService.class);
 	
 	private String dbPath = "ip2locationdb/IP2LOCATION-LITE-DB3.BIN";
 	private IP2Location ip2Location = new IP2Location();

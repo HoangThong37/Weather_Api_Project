@@ -1,4 +1,6 @@
-package com.weatherapi.weatherforecast.location;
+package com.weatherapi.weatherforecast.realtime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,4 +31,26 @@ public class LocationRepositoryTest {
         
         realtimeRepository.save(realtimeWeather);
     }
+
+    @Test
+    public void testFindByCountryCodeAndCityFound() {
+    	String countryCode = "JP";
+    	String city = "Japan";
+    	
+      RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
+      assertThat(realtimeWeather).isNull();
+    }
+    
+    
+    @Test
+    public void testFindByCountryCodeAndCitySuccess() {
+    	String countryCode = "SG";
+    	String city = "HO CHI MINH City";
+    	
+      RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
+      
+      assertThat(realtimeWeather).isNotNull();
+      assertThat(realtimeWeather.getLocation().getCountryCode()).isEqualTo(countryCode);
+    }
+
 }

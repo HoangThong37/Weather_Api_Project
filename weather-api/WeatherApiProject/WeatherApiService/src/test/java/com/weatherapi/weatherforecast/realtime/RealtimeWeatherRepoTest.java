@@ -197,5 +197,7 @@ public class RealtimeWeatherRepoTest {
 		
 		mockMvc.perform(delete(requestUrl)).andExpect(status().isNoContent()).andDo(print());
 	}
+	
+	
 
 }
