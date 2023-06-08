@@ -7,5 +7,8 @@ import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 public interface IRealtimeService { 
 	
     RealtimeWeather getByLocation(Location location) throws LocationNotFoundException;
+    
+    RealtimeWeather getByLocationCode(String locationCode) throws LocationNotFoundException;
+    
 
 }

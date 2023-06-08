@@ -28,4 +28,15 @@ public class RealtimeServiceImpl implements IRealtimeService {
 		}
 		return realtimeWeather;
 	}
+
+	
+	@Override
+	public RealtimeWeather getByLocationCode(String locationCode) throws LocationNotFoundException {
+	
+		RealtimeWeather realtimeWeather = repository.findByLocationCode(locationCode);
+		if (realtimeWeather == null) {
+			throw new LocationNotFoundException("No location found with the given location code");
+		}
+		return realtimeWeather;
+	}
 }

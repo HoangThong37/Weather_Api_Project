@@ -92,4 +92,18 @@ public class RealtimeWeatherApiControllerTest {
 		       .andExpect(content().contentType("application/json"))
 		       .andDo(print());
 	}
+	
+	// test controler getByLocationCode
+	@Test
+	public void testGetByLocationCodeReturnStatus404NotFound() throws Exception { // server không tìm thấy tài nguyên được yêu cầu
+		String locationCode = "VIETNAM";
+		
+		Mockito.when(realtimeService.getByLocationCode(locationCode)).thenThrow(LocationNotFoundException.class);
+		
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		mockMvc.perform(get(url))
+		       .andExpect(status().isNotFound())
+		       .andDo(print());
+	}
 }

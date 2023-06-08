@@ -16,41 +16,60 @@ import com.weatherapi.weatherforecast.repository.RealtimeRepository;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Rollback(false)
 public class LocationRepositoryTest {
-	
+
 	@Autowired
 	private RealtimeRepository realtimeRepository;
 
-    @Test
-    public void testUpdated() {
-    	String locationCode = "VIETNAM";
-   
-        RealtimeWeather realtimeWeather	= realtimeRepository.findById(locationCode).get();
-        
-        realtimeWeather.setHumidity(35);
-        realtimeWeather.setStatus("Snowy");
-        
-        realtimeRepository.save(realtimeWeather);
-    }
+	@Test
+	public void testUpdated() {
+		String locationCode = "VIETNAM";
 
-    @Test
-    public void testFindByCountryCodeAndCityFound() {
-    	String countryCode = "JP";
-    	String city = "Japan";
-    	
-      RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
-      assertThat(realtimeWeather).isNull();
-    }
-    
-    
-    @Test
-    public void testFindByCountryCodeAndCitySuccess() {
-    	String countryCode = "SG";
-    	String city = "HO CHI MINH City";
-    	
-      RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
-      
-      assertThat(realtimeWeather).isNotNull();
-      assertThat(realtimeWeather.getLocation().getCountryCode()).isEqualTo(countryCode);
-    }
+		RealtimeWeather realtimeWeather = realtimeRepository.findById(locationCode).get();
 
+		realtimeWeather.setHumidity(35);
+		realtimeWeather.setStatus("Snowy");
+
+		realtimeRepository.save(realtimeWeather);
+	}
+
+	@Test
+	public void testFindByCountryCodeAndCityFound() {
+		String countryCode = "JP";
+		String city = "Japan";
+
+		RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
+		assertThat(realtimeWeather).isNull();
+	}
+
+	@Test
+	public void testFindByCountryCodeAndCitySuccess() {
+		String countryCode = "US";
+		String city = "New York City";
+
+		RealtimeWeather realtimeWeather = realtimeRepository.findByCountryCodeAndCity(countryCode, city);
+
+		assertThat(realtimeWeather).isNotNull();
+		assertThat(realtimeWeather.getLocation().getCountryCode()).isEqualTo(countryCode);
+	}
+
+	// test findByLocationCode
+	@Test
+	public void testFindByLocationNotFound() {
+		String location = "VIETNAMs";
+
+		RealtimeWeather realtimeWeather = realtimeRepository.findByLocationCode(location);
+
+		assertThat(realtimeWeather).isNull();
+		//assertThat(realtimeWeather.getLocation().getCountryCode()).isEqualTo(countryCode);
+	}
+	
+	@Test
+	public void testFindByLocationSuccess() {
+		String location = "VIETNAM";
+
+		RealtimeWeather realtimeWeather = realtimeRepository.findByLocationCode(location);
+
+		assertThat(realtimeWeather).isNotNull();
+		assertThat(realtimeWeather.getLocationCode()).isEqualTo(location);
+	}
 }
