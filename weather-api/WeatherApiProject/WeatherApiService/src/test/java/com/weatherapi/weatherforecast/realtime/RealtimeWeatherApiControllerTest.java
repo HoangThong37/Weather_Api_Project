@@ -1,6 +1,7 @@
 package com.weatherapi.weatherforecast.realtime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,5 +106,28 @@ public class RealtimeWeatherApiControllerTest {
 		mockMvc.perform(get(url))
 		       .andExpect(status().isNotFound())
 		       .andDo(print());
+	}
+	
+	// test controller update
+	@Test
+	public void testUpdateShouldReturnStatus400BadRequest() throws Exception { // server không tìm thấy tài nguyên được yêu cầu
+		String locationCode = "ABC_US";
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		RealtimeWeather realtimeWeather = new RealtimeWeather();
+		//realtimeWeather.setLocation(null);
+		realtimeWeather.setTemperature(12);
+		realtimeWeather.setHumidity(32);
+		realtimeWeather.setLastUpdated(new Date());
+		realtimeWeather.setStatus("Cloudy");
+		realtimeWeather.setWindSpeed(5);
+		realtimeWeather.setPrecipitation(88);
+		
+		String bodyContent = objectMapper.writeValueAsString(realtimeWeather);
+		
+		mockMvc.perform(put(url).contentType("application/json")
+								.content(bodyContent))
+						        .andExpect(status().isBadRequest())
+						        .andDo(print());
 	}
 }

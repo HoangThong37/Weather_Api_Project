@@ -2,6 +2,8 @@ package com.weatherapi.weatherforecast.common;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ public class RealtimeWeather {
 	
 	@Id
 	@Column(name = "location_code")
+	@JsonIgnore
 	private String locationCode;
 	
 	@Column
@@ -34,11 +37,13 @@ public class RealtimeWeather {
 	private String status;
 	
 	@Column
+	@JsonIgnore
 	private Date lastUpdated;
 	
 	@OneToOne
 	@JoinColumn(name = "location_code") 
 	@MapsId
+	@JsonIgnore
 	private Location location;
 	
 	

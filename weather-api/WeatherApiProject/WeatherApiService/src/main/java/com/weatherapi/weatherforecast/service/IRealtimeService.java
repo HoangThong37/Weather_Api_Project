@@ -10,5 +10,5 @@ public interface IRealtimeService {
     
     RealtimeWeather getByLocationCode(String locationCode) throws LocationNotFoundException;
     
-
+    RealtimeWeather update(String locationCode, RealtimeWeather realtimeWeather) throws LocationNotFoundException;
 }
