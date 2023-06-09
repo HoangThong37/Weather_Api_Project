@@ -56,10 +56,10 @@ public class Location {
 	
 	@OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
+	@JsonIgnore //  @JsonIgnore là một annotation trong Spring Framework được sử dụng để ngăn cản các thuộc tính trong một đối tượng Java được chuyển đổi thành JSON
 	private RealtimeWeather realtimeWeather;
 
 	public Location() {
-		
 	}
 	
 	public Location(String cityName, String regionName, String countryName, String countryCode) {

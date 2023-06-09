@@ -58,6 +58,11 @@ public class RealtimeServiceImpl implements IRealtimeService {
 		realtimeWeather.setLocation(location);
 		realtimeWeather.setLastUpdated(new Date());
 		
+		if (location.getRealtimeWeather() == null) {
+			location.setRealtimeWeather(realtimeWeather);
+			Location locationUpdate = locationRepo.save(location);
+			return locationUpdate.getRealtimeWeather();
+		}
 		return repository.save(realtimeWeather);
 	}
 }
