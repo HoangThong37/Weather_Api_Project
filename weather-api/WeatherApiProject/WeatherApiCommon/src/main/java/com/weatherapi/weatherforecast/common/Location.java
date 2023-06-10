@@ -1,6 +1,8 @@
 package com.weatherapi.weatherforecast.common;
 
- import java.util.Objects;
+ import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -11,6 +13,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -58,6 +61,9 @@ public class Location {
 	@PrimaryKeyJoinColumn
 	@JsonIgnore //  @JsonIgnore là một annotation trong Spring Framework được sử dụng để ngăn cản các thuộc tính trong một đối tượng Java được chuyển đổi thành JSON
 	private RealtimeWeather realtimeWeather;
+	
+	@OneToMany(mappedBy = "id.location")
+	private List<HourlyWeather> lisHourlyWeathers = new ArrayList<>();
 
 	public Location() {
 	}
@@ -119,6 +125,15 @@ public class Location {
 	public void setTrashed(boolean trashed) {
 		this.trashed = trashed;
 	}
+	
+	public List<HourlyWeather> getLisHourlyWeathers() {
+		return lisHourlyWeathers;
+	}
+
+	public void setLisHourlyWeathers(List<HourlyWeather> lisHourlyWeathers) {
+		this.lisHourlyWeathers = lisHourlyWeathers;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(code);

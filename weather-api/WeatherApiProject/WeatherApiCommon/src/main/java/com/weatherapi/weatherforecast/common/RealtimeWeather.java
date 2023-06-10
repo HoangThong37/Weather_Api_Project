@@ -27,7 +27,7 @@ public class RealtimeWeather {
 	private String locationCode;
 	
 	@Range(min = -50, max = 50, message = "Temperator must be in the range of -50 to 50 Celsius degree")
-	private int temperature;
+	private int temperature;  // nđộ
 	
 	@Range(min = -50, max = 50, message = "Humidity must be in the range of 0 to 100 percentage")
 	private int humidity;  // độ ẩm 
