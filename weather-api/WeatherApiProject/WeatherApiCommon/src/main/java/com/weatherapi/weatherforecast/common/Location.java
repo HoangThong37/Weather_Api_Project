@@ -62,8 +62,8 @@ public class Location {
 	@JsonIgnore //  @JsonIgnore là một annotation trong Spring Framework được sử dụng để ngăn cản các thuộc tính trong một đối tượng Java được chuyển đổi thành JSON
 	private RealtimeWeather realtimeWeather;
 	
-	@OneToMany(mappedBy = "id.location")
-	private List<HourlyWeather> lisHourlyWeathers = new ArrayList<>();
+	@OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL)
+	private List<HourlyWeather> listHourlyWeathers = new ArrayList<>();
 
 	public Location() {
 	}
@@ -126,12 +126,17 @@ public class Location {
 		this.trashed = trashed;
 	}
 	
-	public List<HourlyWeather> getLisHourlyWeathers() {
-		return lisHourlyWeathers;
+	public List<HourlyWeather> getListHourlyWeathers() {
+		return listHourlyWeathers;
 	}
 
-	public void setLisHourlyWeathers(List<HourlyWeather> lisHourlyWeathers) {
-		this.lisHourlyWeathers = lisHourlyWeathers;
+	public void setListHourlyWeathers(List<HourlyWeather> listHourlyWeathers) {
+		this.listHourlyWeathers = listHourlyWeathers;
+	}
+	
+	public Location code(String code) {
+		setCode(code);
+		return this;
 	}
 
 	@Override

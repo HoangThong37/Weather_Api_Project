@@ -15,6 +15,15 @@ public class HourlyWeatherId implements Serializable {
 	@JoinColumn(name = "location_code")
 	private Location location;  // relationship many-to-one
 	
+	public HourlyWeatherId() {
+	}
+	
+	public HourlyWeatherId(int hourOfDay, Location location) {
+		super();
+		this.hourOfDay = hourOfDay;
+		this.location = location;
+	}
+	
 	public int getHourOfDay() {
 		return hourOfDay;
 	}
@@ -27,4 +36,5 @@ public class HourlyWeatherId implements Serializable {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
+
 }
