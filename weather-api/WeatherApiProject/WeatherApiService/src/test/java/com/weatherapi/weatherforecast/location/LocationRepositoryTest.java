@@ -1,4 +1,4 @@
-package com.weatherapi.weatherforecast.realtime;
+package com.weatherapi.weatherforecast.location;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,6 +122,30 @@ public class LocationRepositoryTest {
 		Location updateLocation = locationRepository.save(location);
 		
 		assertThat(updateLocation.getListHourlyWeathers()).isNotEmpty();
+	}
+	
+	// test findByCountryCodeAndCityName Not Found()
+	@Test
+	public void testFindByCountryCodeAndCityNameNotFound() {
+		String countryCode = "IndiaA";
+		String cityName = "city test";
+
+		Location location = locationRepository.findByCountryCodeAndCityName(countryCode, cityName);
+
+		assertThat(location).isNull();
+	}
+	
+	// test FindByCountryCodeAndCityName Found
+	@Test
+	public void testFindByCountryCodeAndCityNameFound() { // ko 
+		String countryCode = "In";
+		String cityName = "city test";
+
+		Location location = locationRepository.findByCountryCodeAndCityName(countryCode, cityName);
+
+		assertThat(location).isNotNull();
+		assertThat(location.getCountryCode()).isEqualTo(countryCode);
+		assertThat(location.getCityName()).isEqualTo(cityName);
 	}
 }
  

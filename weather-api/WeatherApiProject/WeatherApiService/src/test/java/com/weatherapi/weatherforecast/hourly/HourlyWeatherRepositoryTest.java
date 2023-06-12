@@ -2,6 +2,7 @@ package com.weatherapi.weatherforecast.hourly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,26 @@ public class HourlyWeatherRepositoryTest {
 		Optional<HourlyWeather> hourlyWeather = weatherRepository.findById(hourlyWeatherId);
 		
 		assertThat(hourlyWeather).isNotEmpty();
+	}
+	
+	// test findbylocationcode not found() - ko có
+	@Test
+	public void testFindByLocationCodeNotFound() {
+		String locationCode = "MBTest";
+		int curentHour = 13;
+
+		List<HourlyWeather> list = weatherRepository.findByLocationCode(locationCode, curentHour);
+		assertThat(list).isEmpty();
+	}
+	
+	// test findbylocationcode found
+	@Test
+	public void testFindByLocationCodeFound() { 
+		String locationCode = "MBTest";
+		int curentHour = 5;
+
+		List<HourlyWeather> list = weatherRepository.findByLocationCode(locationCode, curentHour);
+		assertThat(list).isNotEmpty();
 	}
  
 }
