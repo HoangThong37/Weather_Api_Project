@@ -36,9 +36,10 @@ public class HourlyWeatherApiController {
 	public ResponseEntity<?> listHourlyForecastByIPAddress(HttpServletRequest request) throws Exception {
 		// get Location
 		String ipAddress = CommonUtility.getIPAddress(request);
-		int currentHour = Integer.parseInt(request.getHeader("X-Current-Hour"));
 				
 		try {
+			int currentHour = Integer.parseInt(request.getHeader("X-Current-Hour"));
+			
 			Location location = geoLocationService.getLocation(ipAddress);
 			List<HourlyWeather> listHourlyWeathers = hourlyWeatherService.getByLocation(location, currentHour);
 			if (listHourlyWeathers.isEmpty()) {
@@ -46,7 +47,7 @@ public class HourlyWeatherApiController {
 			}
 			return ResponseEntity.ok(listHourlyWeathers);
 			
-		} catch (GeoLocationException e) {
+		} catch (NumberFormatException | GeoLocationException e) {
 			LOGGER.error(e.getMessage(), e);
 			return ResponseEntity.badRequest().build();
 			
