@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.weatherapi.weatherforecast.common.HourlyWeather;
 import com.weatherapi.weatherforecast.common.Location;
+import com.weatherapi.weatherforecast.converter.HourlyWeatherConverter;
+import com.weatherapi.weatherforecast.dto.HourlyWeatherListDTO;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.IGeoLocationService;
@@ -32,6 +34,9 @@ public class HourlyWeatherApiController {
 	@Autowired
 	private IHourlyWeatherService hourlyWeatherService;
 	
+	@Autowired
+	private HourlyWeatherConverter hourlyWeatherConverter;
+	
 	@GetMapping
 	public ResponseEntity<?> listHourlyForecastByIPAddress(HttpServletRequest request) throws Exception {
 		// get Location
@@ -45,7 +50,7 @@ public class HourlyWeatherApiController {
 			if (listHourlyWeathers.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
-			return ResponseEntity.ok(listHourlyWeathers);
+			return ResponseEntity.ok(listEntity2DTO(listHourlyWeathers));
 			
 		} catch (NumberFormatException | GeoLocationException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -55,5 +60,14 @@ public class HourlyWeatherApiController {
 			LOGGER.error(e.getMessage(), e);
 			return ResponseEntity.notFound().build();
 		}
+	}
+	
+	public HourlyWeatherListDTO listEntity2DTO(List<HourlyWeather> hourlyForecast) throws Exception {
+		Location location = hourlyForecast.get(0).getId().getLocation();
+	
+		HourlyWeatherListDTO listDTO = hourlyWeatherConverter.convertToDTO(hourlyForecast);
+		listDTO.setLocation(location.toString());
+		
+		return listDTO;
 	}
 }

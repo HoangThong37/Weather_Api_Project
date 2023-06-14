@@ -1,6 +1,5 @@
 package com.weatherapi.weatherforecast.hourly;
 
-import static org.mockito.ArgumentMatchers.intThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -24,7 +23,6 @@ import com.weatherapi.weatherforecast.service.IGeoLocationService;
 import com.weatherapi.weatherforecast.service.IHourlyWeatherService;
 
 @WebMvcTest(HourlyWeatherApiController.class)
-
 public class HourlyWeatherApiControllerTests {
 
 	private static final String END_POINT_PATH = "/v1/hourly";
@@ -47,7 +45,7 @@ public class HourlyWeatherApiControllerTests {
 
 	@Test
 	public void testGetByIPShouldReturn400BadRequestBecauseNoHeaderXCurrentHour() throws Exception { // là một lỗi HTTP status code, chỉ ra rằng máy chủ không thể hiểu hoặc xử lý yêu cầu của trình duyệt
-		
+		// 400 : máy chủ ko hiểu request từ ng dùng do lỗi trong việc truyền dữ liệu.
 		mockMvc.perform(get(END_POINT_PATH))
 		       .andExpect(status().isBadRequest())
 		       .andDo(print());
@@ -66,7 +64,6 @@ public class HourlyWeatherApiControllerTests {
 	
 	@Test
 	public void testGetByIPShouldReturn204NoContent() throws Exception {
-		 
 		int currentHour = 9;
 		Location location = new Location().code("VIETNAM");
 		
