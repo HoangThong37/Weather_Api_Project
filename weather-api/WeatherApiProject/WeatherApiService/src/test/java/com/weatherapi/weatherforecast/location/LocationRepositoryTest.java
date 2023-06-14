@@ -101,17 +101,17 @@ public class LocationRepositoryTest {
 	// test add hour weather
 	@Test
 	public void testAddHourWeatherData() {
-		Location location = locationRepository.findById("VIETNAM").get();
+		Location location = locationRepository.findById("NYC_USA").get();
 		// get hour weather
 		List<HourlyWeather> listHourlyWeathers = location.getListHourlyWeathers();
 		
-		HourlyWeather hourlyWeather1 = new HourlyWeather().id(location, 15)
+		HourlyWeather hourlyWeather1 = new HourlyWeather().id(location, 11)
 				                                         .precipitation(50)
 				                                         .temperature(35)
 				                                         .status("Sunny");
 		
 		HourlyWeather hourlyWeather2 = new HourlyWeather().location(location)
-				                                          .hourOfDay(17)
+				                                          .hourOfDay(10)
 											              .precipitation(54) // lượng mưa
 											              .temperature(32)
 											              .status("Sunny");
