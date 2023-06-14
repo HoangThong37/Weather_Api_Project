@@ -34,8 +34,17 @@ public class HourlyWeatherServiceImpl implements IHourlyWeatherService {
 		if (locationInDB == null) {
 			throw new LocationNotFoundException("No Location found with the given country code and city name");
 		}
-		
 		return hourlyWeatherRepository.findByLocationCode(locationInDB.getCode(), currentHour);
+	}
+
+	@Override
+	public List<HourlyWeather> getByLocationCode(String locationCode, int currentHour) throws LocationNotFoundException {
+          
+        Location location = locationRepository.findByCode(locationCode); 
+        if (location == null) {
+        	throw new LocationNotFoundException("No Location found with the given locationCode");
+		}
+		return hourlyWeatherRepository.findByLocationCode(location.getCode(), currentHour);
 	}
 	
 	

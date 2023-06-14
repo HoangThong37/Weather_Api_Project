@@ -29,9 +29,6 @@ public class HourlyWeatherApiControllerTests {
 
 	@Autowired MockMvc mockMvc;
 	
-//	@Autowired
-//	ObjectMapper objectMapper;
-//	
 	@MockBean
 	IHourlyWeatherService hourlyWeatherService;
 	
@@ -106,6 +103,21 @@ public class HourlyWeatherApiControllerTests {
 		
 		mockMvc.perform(get(END_POINT_PATH).header("X-Current-Hour", String.valueOf(currentHour)))  
 		       .andExpect(status().isOk())
+		       .andDo(print());
+	}
+	
+	
+	// testGetByCodeShouldReturn400BadRequest();
+	// testGetByCodeShouldReturn404NotFound();
+	// testGetByCodeShouldReturn204NoContent();
+	// testGetByCodeShouldReturn200OK();
+	
+	@Test
+	public void testGetByCodeShouldReturn400BadRequest() throws Exception {
+		String locationCode = "NYC_USA";
+		String url = END_POINT_PATH + "/" + locationCode;
+		mockMvc.perform(get(url))
+		       .andExpect(status().isBadRequest())
 		       .andDo(print());
 	}
 
