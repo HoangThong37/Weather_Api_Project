@@ -1,11 +1,15 @@
 package com.weatherapi.weatherforecast.hourly;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -13,11 +17,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherapi.weatherforecast.common.HourlyWeather;
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.controller.HourlyWeatherApiController;
+import com.weatherapi.weatherforecast.dto.HourlyWeatherDTO;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
 import com.weatherapi.weatherforecast.service.IGeoLocationService;
 import com.weatherapi.weatherforecast.service.IHourlyWeatherService;
@@ -28,6 +35,8 @@ public class HourlyWeatherApiControllerTests {
 	private static final String END_POINT_PATH = "/v1/hourly";
 
 	@Autowired MockMvc mockMvc;
+	
+	@Autowired ObjectMapper objectMapper;
 	
 	@MockBean
 	IHourlyWeatherService hourlyWeatherService;
@@ -120,6 +129,27 @@ public class HourlyWeatherApiControllerTests {
 		       .andExpect(status().isBadRequest())
 		       .andDo(print());
 	}
-
 	
+	
+	// testUpdateShouldReturn400BadRequestBecauseNoData()
+	// testUpdateShouldReturn400BadRequestBecauseInvalidData()
+	// testUpdateShouldReturn404NotFound()
+	// testUpdateShouldReturn400BadRequestBecauseNoData()
+	
+	@Test
+	public void testUpdateShouldReturn400BadRequestBecauseNoData() throws Exception {
+		String locationCode = "NYC_USA";
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		List<HourlyWeatherDTO> hourlyWeatherDTOs = Collections.EMPTY_LIST;
+		
+		String bodyContent = objectMapper.writeValueAsString(hourlyWeatherDTOs);
+		mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
+			   .content(bodyContent))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.errorDetails[0]", is("Hourly forecast data cannot be empty")))
+		       .andDo(print());
+	}
+	
+//	
 }

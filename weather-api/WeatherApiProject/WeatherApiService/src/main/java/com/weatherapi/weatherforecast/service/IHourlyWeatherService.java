@@ -12,5 +12,7 @@ public interface IHourlyWeatherService {
      List<HourlyWeather> getByLocation(Location location, int currentHour) throws LocationNotFoundException;
      
      List<HourlyWeather> getByLocationCode(String locationCode, int currentHour) throws LocationNotFoundException;
+     
+     List<HourlyWeather> updateByLocationCode(String code, List<HourlyWeather> listHourlyWeathers);
 
 }

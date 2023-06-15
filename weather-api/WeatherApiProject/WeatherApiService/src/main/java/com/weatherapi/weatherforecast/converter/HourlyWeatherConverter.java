@@ -26,10 +26,5 @@ public class HourlyWeatherConverter {
     	}
     	
         return result;
-        
-        
-//        hourlyForecast.stream()
-//        .map(item -> modelMapper.map(item, HourlyWeatherDTO.class))
-//        .forEach(dto -> result.addHourlyWeatherDTO(dto));
     }
 }

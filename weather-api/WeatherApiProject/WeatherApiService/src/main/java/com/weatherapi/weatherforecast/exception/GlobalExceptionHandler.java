@@ -41,6 +41,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		LOGGER.error(exception.getMessage(), exception);
 		return errorDTO;
 	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public ErrorDTO handleBadRequestException(HttpServletRequest request, Exception exception) {
+		ErrorDTO errorDTO = new ErrorDTO();
+		errorDTO.setTimestamp(new Date());
+		errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorDTO.setPath(request.getServletPath());
+		errorDTO.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+	
+		LOGGER.error(exception.getMessage(), exception);
+		return errorDTO;
+	}
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

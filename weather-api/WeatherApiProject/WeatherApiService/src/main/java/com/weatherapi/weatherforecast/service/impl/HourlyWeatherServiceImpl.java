@@ -1,8 +1,8 @@
 package com.weatherapi.weatherforecast.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +17,20 @@ import com.weatherapi.weatherforecast.service.IHourlyWeatherService;
 @Transactional
 public class HourlyWeatherServiceImpl implements IHourlyWeatherService {
 
-	@Autowired
-	private HourlyWeatherRepository hourlyWeatherRepository;
-
-	@Autowired
-	private LocationRepository locationRepository;
+//	@Autowired
+//	private HourlyWeatherRepository hourlyWeatherRepository;
+//
+//	@Autowired
+//	private LocationRepository locationRepository;
+	
+    private final HourlyWeatherRepository hourlyWeatherRepository;
+    private final LocationRepository locationRepository;
+    
+	public HourlyWeatherServiceImpl(HourlyWeatherRepository hourlyWeatherRepo, LocationRepository locationRepo) {
+		super();
+		this.hourlyWeatherRepository = hourlyWeatherRepo;
+		this.locationRepository = locationRepo;
+	}
 
 	@Override
 	public List<HourlyWeather> getByLocation(Location location, int currentHour) throws LocationNotFoundException {
@@ -42,9 +51,19 @@ public class HourlyWeatherServiceImpl implements IHourlyWeatherService {
           
         Location location = locationRepository.findByCode(locationCode); 
         if (location == null) {
-        	throw new LocationNotFoundException("No Location found with the given locationCode");
+        	throw new LocationNotFoundException("No Location found with the given location code");
 		}
 		return hourlyWeatherRepository.findByLocationCode(location.getCode(), currentHour);
+	}
+
+	// update location code 
+	@Override
+	public List<HourlyWeather> updateByLocationCode(String code, List<HourlyWeather> listHourlyWeathers) {
+		
+	   // Location location = locationRepository.findByCode(code);
+	   // List<HourlyWeather> hourlyWeathers = hourlyWeatherRepository.saveAll(location);
+		
+		return Collections.EMPTY_LIST;
 	}
 	
 	
