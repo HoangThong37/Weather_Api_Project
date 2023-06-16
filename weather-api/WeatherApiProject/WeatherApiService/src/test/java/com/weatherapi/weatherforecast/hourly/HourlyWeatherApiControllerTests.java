@@ -1,5 +1,6 @@
 package com.weatherapi.weatherforecast.hourly;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -148,6 +149,35 @@ public class HourlyWeatherApiControllerTests {
 			   .content(bodyContent))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.errorDetails[0]", is("Hourly forecast data cannot be empty")))
+		       .andDo(print());
+	}
+	
+	@Test
+	public void testUpdateShouldReturn400BadRequestBecauseInvalidData() throws Exception {
+		
+		String locationCode = "NYC_USA";
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		HourlyWeatherDTO hourly1 = new HourlyWeatherDTO()
+		        .hourOfDay(10)
+		        .temperature(133)
+		        .precipitation(70)
+		        .status("Cloudy");
+		 
+		HourlyWeatherDTO hourly2 = new HourlyWeatherDTO()
+		        .hourOfDay(11)
+		        .temperature(15)
+		        .precipitation(60)
+		        .status("Sunny");
+		
+		List<HourlyWeatherDTO> result = List.of(hourly1, hourly2);
+		
+		String bodyContent = objectMapper.writeValueAsString(result);
+		
+		mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
+			   .content(bodyContent))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.errors[0]", containsString("Temperator must be in the range")))
 		       .andDo(print());
 	}
 	

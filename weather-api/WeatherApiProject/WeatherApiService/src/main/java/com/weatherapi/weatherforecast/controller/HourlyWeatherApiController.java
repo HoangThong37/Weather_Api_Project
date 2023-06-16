@@ -1,9 +1,7 @@
 package com.weatherapi.weatherforecast.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import com.weatherapi.weatherforecast.common.HourlyWeather;
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.converter.HourlyWeatherConverter;
 import com.weatherapi.weatherforecast.dto.HourlyWeatherDTO;
-import com.weatherapi.weatherforecast.dto.HourlyWeatherListDTO;
 import com.weatherapi.weatherforecast.exception.BadRequestException;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
@@ -29,10 +26,11 @@ import com.weatherapi.weatherforecast.service.IHourlyWeatherService;
 import com.weatherapi.weatherforecast.utils.CommonUtility;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/hourly")
-//@Validated
+@Validated
 public class HourlyWeatherApiController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HourlyWeatherApiController.class);
@@ -60,7 +58,7 @@ public class HourlyWeatherApiController {
 			if (listHourlyWeathers.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
-			return ResponseEntity.ok(listEntity2DTO(listHourlyWeathers));
+			return ResponseEntity.ok(hourlyWeatherConverter.convertToDTO(listHourlyWeathers));
 
 		} catch (NumberFormatException | GeoLocationException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -70,15 +68,6 @@ public class HourlyWeatherApiController {
 			LOGGER.error(e.getMessage(), e);
 			return ResponseEntity.notFound().build();
 		}
-	}
-
-	public HourlyWeatherListDTO listEntity2DTO(List<HourlyWeather> hourlyForecast) throws Exception {
-		Location location = hourlyForecast.get(0).getId().getLocation();
-
-		HourlyWeatherListDTO listDTO = hourlyWeatherConverter.convertToDTO(hourlyForecast);
-		listDTO.setLocation(location.toString());
-
-		return listDTO;
 	}
 
 	@GetMapping("/{locationCode}")
@@ -92,7 +81,7 @@ public class HourlyWeatherApiController {
 			if (listHourlyWeathers.isEmpty()) {
 				return ResponseEntity.noContent().build();
 			}
-			return ResponseEntity.ok(listEntity2DTO(listHourlyWeathers));
+			return ResponseEntity.ok(hourlyWeatherConverter.convertToDTO(listHourlyWeathers));
 
 		} catch (NumberFormatException e) {
 			return ResponseEntity.badRequest().build();
@@ -104,42 +93,18 @@ public class HourlyWeatherApiController {
 	// update hourly forecast
 	@PutMapping("/{locationCode}")
 	public ResponseEntity<?> updateHourlyForecast(@PathVariable("locationCode") String locationCode,
-			@RequestBody List<HourlyWeatherDTO> listDTOs) throws BadRequestException {
+			@RequestBody @Valid List<HourlyWeatherDTO> listDTOs) throws BadRequestException {
 
 		if (listDTOs.isEmpty()) {
 			throw new BadRequestException("Hourly forecast data cannot be empty");
 		}
+		listDTOs.forEach(System.out::println);
+		
+		List<HourlyWeather> listHourlyWeathers = hourlyWeatherConverter.convertToEntity(listDTOs);
+		
+		listHourlyWeathers.forEach(System.out::println);
 
 		return ResponseEntity.accepted().build(); // mã trạng thái `202 Accepted` và không có nội dung thân của phản hồi
 	}
-
-	
-	
-	
-	// test
-//	private HourlyWeatherListDTO listEntityToDTO(List<HourlyWeather> hourlyForecast) {
-//		Location location = hourlyForecast.get(0).getId().getLocation();
-//
-//		HourlyWeatherListDTO listDTO = new HourlyWeatherListDTO();
-//		listDTO.setLocation(location.toString());
-//
-//		hourlyForecast.forEach(hourlyWeather -> {
-//			HourlyWeatherDTO dto = modelMapper.map(hourlyWeather, HourlyWeatherDTO.class);
-//			listDTO.addHourlyWeatherDTO(dto);
-//		});
-//
-//		return listDTO;
-//
-//	}
-//
-//	private List<HourlyWeather> listDTO2ListEntity(List<HourlyWeatherDTO> listDTO) {
-//		List<HourlyWeather> listEntity = new ArrayList<>();
-//
-//		listDTO.forEach(dto -> {
-//			listEntity.add(modelMapper.map(dto, HourlyWeather.class));
-//		});
-//
-//		return listEntity;
-//	}
 
 }
