@@ -93,7 +93,7 @@ public class HourlyWeatherApiController {
 	// update hourly forecast
 	@PutMapping("/{locationCode}")
 	public ResponseEntity<?> updateHourlyForecast(@PathVariable("locationCode") String locationCode,
-			@RequestBody @Valid List<HourlyWeatherDTO> listDTOs) throws BadRequestException {
+			                                      @RequestBody @Valid List<HourlyWeatherDTO> listDTOs) throws BadRequestException {
 
 		if (listDTOs.isEmpty()) {
 			throw new BadRequestException("Hourly forecast data cannot be empty");
@@ -103,8 +103,15 @@ public class HourlyWeatherApiController {
 		List<HourlyWeather> listHourlyWeathers = hourlyWeatherConverter.convertToEntity(listDTOs);
 		
 		listHourlyWeathers.forEach(System.out::println);
-
-		return ResponseEntity.accepted().build(); // mã trạng thái `202 Accepted` và không có nội dung thân của phản hồi
+		
+		try {
+			List<HourlyWeather> updateHourlyWeathers = hourlyWeatherService.updateByLocationCode(locationCode, listHourlyWeathers);
+			
+			return ResponseEntity.ok(updateHourlyWeathers);
+		} catch (LocationNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
+//		return ResponseEntity.accepted().build(); // mã trạng thái `202 Accepted` và không có nội dung thân của phản hồi
 	}
 
 }

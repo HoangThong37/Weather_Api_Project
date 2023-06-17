@@ -3,6 +3,7 @@ package com.weatherapi.weatherforecast.hourly;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -27,6 +28,7 @@ import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.controller.HourlyWeatherApiController;
 import com.weatherapi.weatherforecast.dto.HourlyWeatherDTO;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
+import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.IGeoLocationService;
 import com.weatherapi.weatherforecast.service.IHourlyWeatherService;
 
@@ -181,5 +183,85 @@ public class HourlyWeatherApiControllerTests {
 		       .andDo(print());
 	}
 	
-//	
+	
+	@Test
+	public void testUpdateShouldReturn404NotFound() throws Exception {
+		
+		String locationCode = "NYC_USA";
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		HourlyWeatherDTO hourly1 = new HourlyWeatherDTO()
+		        .hourOfDay(10)
+		        .temperature(133)
+		        .precipitation(70)
+		        .status("Cloudy");
+		 
+		List<HourlyWeatherDTO> result = List.of(hourly1);
+		
+		String bodyContent = objectMapper.writeValueAsString(result);
+		
+		when(hourlyWeatherService.updateByLocationCode(Mockito.eq(locationCode), Mockito.anyList()))
+		                         .thenThrow(LocationNotFoundException.class);
+		
+		mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
+			   .content(bodyContent))
+		       .andExpect(status().isNotFound())
+		       .andDo(print());
+	}
+	
+	// 
+	@Test
+	public void testUpdateShouldReturn200OK() throws Exception {
+		
+		String locationCode = "NYC_USA";
+		String url = END_POINT_PATH + "/" + locationCode;
+		
+		Location location = new Location();
+		location.setCode("NYC_USA");
+		location.setCityName("New York City");
+		location.setRegionName("New York");
+		location.setCountryCode("US");
+		location.setCountryName("United States of America");
+		
+		HourlyWeather hourlyWeather1 = new HourlyWeather()
+				.location(location)
+		        .hourOfDay(10)
+		        .temperature(13)
+		        .precipitation(70)
+		        .status("Cloudy");
+		 
+		HourlyWeather hourlyWeather2 = new HourlyWeather()
+				.location(location)
+		        .hourOfDay(11)
+		        .temperature(15)
+		        .precipitation(60)
+		        .status("Sunny");
+		
+		
+		HourlyWeatherDTO hourly1 = new HourlyWeatherDTO()
+		        .hourOfDay(10)
+		        .temperature(33)
+		        .precipitation(70)
+		        .status("Cloudy");
+		
+		HourlyWeatherDTO hourly2 = new HourlyWeatherDTO()
+		        .hourOfDay(11)
+		        .temperature(15)
+		        .precipitation(60)
+		        .status("Sunny");
+		 
+		List<HourlyWeatherDTO> result = List.of(hourly1, hourly2);
+		var hourlyWeather = List.of(hourlyWeather1, hourlyWeather2);
+		 
+		String bodyContent = objectMapper.writeValueAsString(result);
+		
+		when(hourlyWeatherService.updateByLocationCode(Mockito.eq(locationCode), Mockito.anyList()))
+		                         .thenReturn(hourlyWeather);
+		
+		mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
+			   .content(bodyContent))
+		       .andExpect(status().isOk())
+		       .andExpect(jsonPath("$.location", is(location.toString())))
+		       .andDo(print());
+	}
 }

@@ -58,12 +58,13 @@ public class HourlyWeatherServiceImpl implements IHourlyWeatherService {
 
 	// update location code 
 	@Override
-	public List<HourlyWeather> updateByLocationCode(String code, List<HourlyWeather> listHourlyWeathers) {
+	public List<HourlyWeather> updateByLocationCode(String code, List<HourlyWeather> listHourlyWeathers) throws LocationNotFoundException {
+		Location location = locationRepository.findByCode(code);
 		
-	   // Location location = locationRepository.findByCode(code);
-	   // List<HourlyWeather> hourlyWeathers = hourlyWeatherRepository.saveAll(location);
-		
-		return Collections.EMPTY_LIST;
+		if (location == null) {
+			throw new LocationNotFoundException("No location found with the given code : " + code);
+		}
+		return (List<HourlyWeather>) hourlyWeatherRepository.saveAll(listHourlyWeathers);
 	}
 	
 	
