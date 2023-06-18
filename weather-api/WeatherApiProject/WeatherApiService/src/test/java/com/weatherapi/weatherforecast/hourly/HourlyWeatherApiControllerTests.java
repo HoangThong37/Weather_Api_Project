@@ -144,13 +144,14 @@ public class HourlyWeatherApiControllerTests {
 		String locationCode = "NYC_USA";
 		String url = END_POINT_PATH + "/" + locationCode;
 		
-		List<HourlyWeatherDTO> hourlyWeatherDTOs = Collections.EMPTY_LIST;
+		List<HourlyWeatherDTO> listDTOs = Collections.emptyList();
 		
-		String bodyContent = objectMapper.writeValueAsString(hourlyWeatherDTOs);
+		String bodyContent = objectMapper.writeValueAsString(listDTOs);
+		
 		mockMvc.perform(put(url).contentType(MediaType.APPLICATION_JSON)
 			   .content(bodyContent))
 		       .andExpect(status().isBadRequest())
-		       .andExpect(jsonPath("$.errorDetails[0]", is("Hourly forecast data cannot be empty")))
+		       .andExpect(jsonPath("$.errors[0]", is("Hourly forecast data cannot be empty")))
 		       .andDo(print());
 	}
 	

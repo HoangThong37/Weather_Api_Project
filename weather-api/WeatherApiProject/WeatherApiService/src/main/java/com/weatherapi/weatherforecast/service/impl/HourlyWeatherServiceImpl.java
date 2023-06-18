@@ -1,6 +1,6 @@
 package com.weatherapi.weatherforecast.service.impl;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -56,16 +56,34 @@ public class HourlyWeatherServiceImpl implements IHourlyWeatherService {
 		return hourlyWeatherRepository.findByLocationCode(location.getCode(), currentHour);
 	}
 
-	// update location code 
-	@Override
-	public List<HourlyWeather> updateByLocationCode(String code, List<HourlyWeather> listHourlyWeathers) throws LocationNotFoundException {
-		Location location = locationRepository.findByCode(code);
-		
-		if (location == null) {
-			throw new LocationNotFoundException("No location found with the given code : " + code);
-		}
-		return (List<HourlyWeather>) hourlyWeatherRepository.saveAll(listHourlyWeathers);
-	}
 	
+	
+	// update location code 
+	public List<HourlyWeather> updateByLocationCode(String locationCode, List<HourlyWeather> hourlyWeatherInRequest) throws LocationNotFoundException {
+        Location location = locationRepository.findByCode(locationCode);
+
+        if (location == null) {
+            throw new LocationNotFoundException(locationCode);
+        }
+
+        for (HourlyWeather item : hourlyWeatherInRequest) {
+            item.getId().setLocation(location);
+        }
+
+        List<HourlyWeather> hourlyWeatherInDB = location.getListHourlyWeathers();
+        List<HourlyWeather> hourlyWeatherToBeRemoved = new ArrayList<>();
+
+        for (HourlyWeather item : hourlyWeatherInDB) {
+            if (!hourlyWeatherInRequest.contains(item)) {
+                hourlyWeatherToBeRemoved.add(item.getShallowCopy());
+            }
+        }
+
+        for (HourlyWeather item : hourlyWeatherToBeRemoved) {
+            hourlyWeatherInDB.remove(item);
+        }
+
+        return (List<HourlyWeather>) hourlyWeatherRepository.saveAll(hourlyWeatherInRequest);
+    }
 	
 }
