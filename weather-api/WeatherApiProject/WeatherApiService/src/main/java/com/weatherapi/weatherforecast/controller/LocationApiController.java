@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weatherapi.weatherforecast.common.Location;
+import com.weatherapi.weatherforecast.converter.LocationConverter;
+import com.weatherapi.weatherforecast.dto.LocationDTO;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.ILocationService;
 
@@ -26,12 +28,15 @@ public class LocationApiController {
 
     @Autowired
 	private  ILocationService locationService;
+    
+    @Autowired
+	private  LocationConverter locationConverter;
 	
 	@PostMapping
-	public ResponseEntity<Location> createLocation(@RequestBody @Valid Location location) {
-		Location addLocation = locationService.addLocation(location);
+	public ResponseEntity<LocationDTO> createLocation(@RequestBody @Valid LocationDTO location) {
+		Location addLocation = locationService.addLocation(locationConverter.convertToEntity(location));
 		URI uri = URI.create("/v1/locations/" + addLocation.getCode());
-		return ResponseEntity.created(uri).body(addLocation);
+		return ResponseEntity.created(uri).body(locationConverter.convertToDTO(addLocation));
 	}
 
 	@GetMapping
@@ -41,7 +46,7 @@ public class LocationApiController {
 		if (list.isEmpty()) {
 			return ResponseEntity.noContent().build(); // return 204: no content
 		}
-		return ResponseEntity.ok(list);
+		return ResponseEntity.ok(locationConverter.listEntityToListDTO(list));
 	}
 
 	@GetMapping("/{code}")
@@ -55,11 +60,12 @@ public class LocationApiController {
 	
 	// update location
 	@PutMapping
-	public ResponseEntity<?> updateLocation(@RequestBody @Valid Location location) throws LocationNotFoundException {
+	public ResponseEntity<?> updateLocation(@RequestBody @Valid LocationDTO locationDTO) throws LocationNotFoundException {
 		try {
-			Location updateLocation = locationService.updateLocation(location);
-			return ResponseEntity.ok(updateLocation);
-		} catch (Exception e) {
+			Location updateLocation = locationService.updateLocation(locationConverter.convertToEntity(locationDTO));
+			
+			return ResponseEntity.ok(locationConverter.convertToDTO(updateLocation));
+		} catch (LocationNotFoundException e) {
 			return ResponseEntity.notFound().build(); // return 204: no content
 		}
 	}
@@ -69,6 +75,7 @@ public class LocationApiController {
 	public ResponseEntity<?> deleteLocation(@PathVariable(value = "code", required = false) String code) {
 		try {
 			locationService.deletedLocation(code);
+			
 			return ResponseEntity.noContent().build(); // ko còn gtri
 		} catch (Exception e) {
 			return ResponseEntity.notFound().build(); // return 204: no content

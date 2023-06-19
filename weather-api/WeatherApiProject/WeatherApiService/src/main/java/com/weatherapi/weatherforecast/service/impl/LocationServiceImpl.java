@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.weatherapi.weatherforecast.common.Location;
+import com.weatherapi.weatherforecast.dto.LocationDTO;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.repository.LocationRepository;
 import com.weatherapi.weatherforecast.service.ILocationService;

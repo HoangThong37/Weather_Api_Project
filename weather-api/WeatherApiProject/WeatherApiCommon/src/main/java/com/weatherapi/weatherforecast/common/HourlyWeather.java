@@ -116,7 +116,4 @@ public class HourlyWeather {
         return copy;
     }
 	
-	
-	
-	
 }

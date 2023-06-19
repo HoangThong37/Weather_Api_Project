@@ -1,14 +1,20 @@
 package com.weatherapi.weatherforecast.location;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,184 +24,372 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.controller.LocationApiController;
+import com.weatherapi.weatherforecast.dto.LocationDTO;
 import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.ILocationService;
 
 @WebMvcTest(LocationApiController.class)
 public class LocationApiControllerTest {
 
-	private static final String END_POINT_PATH = "/v1/locations";
+	 private static final String END_POINT_PATH = "/v1/locations";
 
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
-	@MockBean
-	ILocationService locationService;
+	    @Autowired
+	    MockMvc mockMvc;
 
-	@Test
-	public void testAddShouldReturn400BadRequest() throws Exception {
-		Location location = new Location();
-		String bodyContent = objectMapper.writeValueAsString(location); // chuyển đối tượng `location` thành một chuỗi
-																		// json
+	    @Autowired
+	    ObjectMapper mapper;
 
-		mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
-				.andExpect(status().isBadRequest()).andDo(print());
-		// thực hiện một request HTTP POST tới đường dẫn `END_POINT_PATH` với các thông
-		// tin như trên
-	}
+	    @MockBean
+	    ILocationService service;
 
-	@Test
-	public void testAddShouldReturn201Created() throws Exception {
-		Location location = new Location();
-		location.setCode("NYC_USA");
-		location.setCityName("New York City");
-		location.setRegionName("New York");
-		location.setCountryCode("US");
-		location.setCountryName("United States of America");
-		location.setEnabled(true);
+	    @Test
+	    public void testAddShouldReturn400BadRequest() throws Exception {
 
-		// Đoạn code này sử dụng thư viện Mockito để tạo ra một đối tượng giả lập và trả
-		// về vị trí đó
-		Mockito.when(locationService.addLocation(location)).thenReturn(location);
+	        // given
+	        LocationDTO locationDTO = new LocationDTO();
 
-		String bodyContent = objectMapper.writeValueAsString(location); // chuyển đối tượng `location` thành một chuỗi
-																		// json
-		mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
-				.andExpect(status().isCreated()).andExpect(content().contentType("application/json")).andDo(print());
-	}
+	        // when
 
-	@Test
-	public void testListShouldReturn204NoContent() throws Exception {
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
 
-		Mockito.when(locationService.listLocation()).thenReturn(Collections.EMPTY_LIST);
+	        // then
+	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isBadRequest())
+	                .andDo(print());
+	    }
 
-		mockMvc.perform(get(END_POINT_PATH)).andExpect(status().isNoContent()).andDo(print());
-	}
+	    @Test
+	    public void testAddShouldReturn201Created() throws Exception {
 
-	@Test
-	public void testListShouldReturn200OK() throws Exception {
+	        // given
+	        Location location = new Location()
+	                .code("NYC_USA")
+	                .cityName("New York City")
+	                .regionName("New York")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+	             
 
-		List<Location> result = new ArrayList<>();
 
-		Location location1 = new Location();
-		location1.setCode("NYC_USA");
-		location1.setCityName("New York City");
-		location1.setRegionName("New York");
-		location1.setCountryCode("US");
-		location1.setCountryName("United States of America");
-		location1.setEnabled(true);
-		result.add(location1);
+	        LocationDTO locationDTO = new LocationDTO()
+	                .code(location.getCode())
+	                .cityName(location.getCityName())
+	                .regionName(location.getRegionName())
+	                .countryCode(location.getCountryCode())
+	                .countryName(location.getCountryName())
+	                .enabled(location.isEnabled());
 
-		Location location2 = new Location();
-		location2.setCode("Test code");
-		location2.setCityName("Test city name");
-		location2.setRegionName("Test region");
-		location2.setCountryCode("Test country code");
-		location2.setCountryName("Test country name");
-		location2.setEnabled(true);
-		result.add(location2);
+	        // when
+	        when(service.addLocation(location)).thenReturn(location);
 
-		Mockito.when(locationService.listLocation()).thenReturn(result);
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
 
-		mockMvc.perform(get(END_POINT_PATH)).andExpect(status().isOk()).andDo(print());
-	}
+	        // then
+	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isCreated())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$.code", is("NYC_USA")))
+	                .andExpect(jsonPath("$.city_name", is("New York City")))
+	                .andExpect(header().string("Location", "/v1/locations/NYC_USA"))
+	                .andDo(print());
+	    }
 
-	@Test
-	public void testGetShouldReturn405MethodNotAllowed() throws Exception {
+	    @Test
+	    public void testListShouldReturn204NoContent() throws Exception {
 
-		String requestUrl = END_POINT_PATH + "/ABCD";
-		mockMvc.perform(post(requestUrl)).andExpect(status().isMethodNotAllowed()).andDo(print());
-	}
+	        // given
 
-	@Test
-	public void testGetShouldReturn404NotFound() throws Exception {
+	        // when
+	        when(service.listLocation()).thenReturn(Collections.emptyList());
 
-		String requestUrl = END_POINT_PATH + "/ABCD";
-		mockMvc.perform(get(requestUrl)).andExpect(status().isNotFound()).andDo(print());
-	}
+	        // then
+	        mockMvc.perform(get(END_POINT_PATH))
+	                .andExpect(status().isNoContent())
+	                .andDo(print());
+	    }
 
-	@Test
-	public void testGetShouldReturn200OK() throws Exception {
-		String code = "AMI";
-		String requestUrl = END_POINT_PATH + "/" + code;
+	    @Test
+	    public void testListShouldReturnLocationList() throws Exception {
 
-		Location location = new Location();
-		location.setCode("NYC_USA");
-		location.setCityName("New York City");
-		location.setRegionName("New York");
-		location.setCountryCode("US");
-		location.setCountryName("United States of America");
-		location.setEnabled(true);
+	        // given
+	        Location location1 = new Location()
+	                .code("NYC_USA")
+	                .cityName("New York City")
+	                .regionName("New York")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true)
+	                ;
 
-		Mockito.when(locationService.get(code)).thenReturn(location); // return
+	        Location location2 = new Location()
+	                .code("LACA_USA")
+	                .cityName("Los Angeles")
+	                .regionName("California")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true)
+	                ;
 
-		mockMvc.perform(get(requestUrl)).andExpect(status().isOk()).andDo(print());
-	}
+	        // when
+	        when(service.listLocation()).thenReturn(List.of(location1, location2));
 
-	// update Location
-	// test 404 Not Found - ko có location trong db
-	@Test
-	public void testUpdateShouldReturn404NotFound() throws Exception {
-		Location location = new Location();
-		location.setCode("ABC");
-		location.setCityName("New York City");
-		location.setRegionName("New Yorks");
-		location.setCountryCode("US");
-		location.setCountryName("United States of Americas");
-		location.setEnabled(true);
+	        // then
+	        mockMvc.perform(get(END_POINT_PATH))
+	                .andExpect(status().isOk())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$[0].code", is("NYC_USA")))
+	                .andExpect(jsonPath("$[0].city_name", is("New York City")))
+	                .andExpect(jsonPath("$[0].region_name", is("New York")))
+	                .andExpect(jsonPath("$[0].country_name", is("United States of America")))
+	                .andExpect(jsonPath("$[0].country_code", is("US")))
+	                .andExpect(jsonPath("$[0].enabled", is(true)))
+	                .andExpect(jsonPath("$[1].code", is("LACA_USA")))
+	                .andExpect(jsonPath("$[1].city_name", is("Los Angeles")))
+	                .andExpect(jsonPath("$[1].region_name", is("California")))
+	                .andExpect(jsonPath("$[1].country_name", is("United States of America")))
+	                .andExpect(jsonPath("$[1].country_code", is("US")))
+	                .andExpect(jsonPath("$[1].enabled", is(true)))
+	                .andDo(print());
+	    }
 
-		Mockito.when(locationService.updateLocation(location))
-				.thenThrow(new LocationNotFoundException("No location found"));
+	    @Test
+	    public void testGetLocationShouldReturn405MethodNotAllowed() throws Exception {
 
-		String body = objectMapper.writeValueAsString(location);
+	        // given
+	        // when
 
-		mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(body))
-				.andExpect(status().isNotFound()).andDo(print());
-	}
+	        // then
+	        String requestURI = END_POINT_PATH + "/ABCDEF";
+	        mockMvc.perform(post(requestURI))
+	                .andExpect(status().isMethodNotAllowed())
+	                .andDo(print());
+	    }
 
-	// test 200 OK
-	@Test
-	public void testUpdateShouldReturn200OK() throws Exception {
-		Location location = new Location();
-		location.setCode("NYC_USA");
-		location.setCityName("New York City");
-		location.setRegionName("New York");
-		location.setCountryCode("US");
-		location.setCountryName("United States of America");
-		location.setEnabled(true);
+	    @Test
+	    public void testGetLocationShouldReturn404NotFound() throws Exception {
 
-		Mockito.when(locationService.updateLocation(location)).thenReturn(location);
+	        // given
+	        // when
 
-		String body = objectMapper.writeValueAsString(location);
+	        // then
+	        String requestURI = END_POINT_PATH + "/ABCDEF";
+	        mockMvc.perform(get(requestURI))
+	                .andExpect(status().isNotFound())
+	                .andDo(print());
+	    }
 
-		mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(body)).andExpect(status().isOk())
-				.andExpect(content().contentType("application/json")).andDo(print());
-	}
-	
-	// delete 
-	@Test
-	public void testDeleteShouldReturn404NotFound() throws Exception {
-		String code = "test";
-		String requestUrl = END_POINT_PATH + "/" + code;
-		Mockito.doThrow(LocationNotFoundException.class).when(locationService).deletedLocation(code);
-		
-		mockMvc.perform(delete(requestUrl)).andExpect(status().isNotFound()).andDo(print());
-	}
-	
-	// delete 
-	@Test
-	public void testDeleteShouldReturn204NoContent() throws Exception {
-		String code = "test";
-		String requestUrl = END_POINT_PATH + "/" + code;
-		
-		Mockito.doNothing().when(locationService).deletedLocation(code);
-		
-		mockMvc.perform(delete(requestUrl)).andExpect(status().isNoContent()).andDo(print());
-	}
+	    @Test
+	    public void testGetLocationShouldReturn200OK() throws Exception {
 
+	        // given
+	        String code = "LACA_USA";
+	        String requestURI = END_POINT_PATH + "/" + code;
+
+	        Location location = new Location()
+	                .code("LACA_USA")
+	                .cityName("Los Angeles")
+	                .regionName("California")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+	                //.build();
+
+	        // when
+	        when(service.get(code)).thenReturn(location);
+
+	        // then
+	        mockMvc.perform(get(requestURI))
+	                .andExpect(status().isOk())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$.code", is("LACA_USA")))
+	                .andExpect(jsonPath("$.city_name", is("Los Angeles")))
+	                .andExpect(jsonPath("$.region_name", is("California")))
+	                .andExpect(jsonPath("$.country_name", is("United States of America")))
+	                .andExpect(jsonPath("$.country_code", is("US")))
+	                .andExpect(jsonPath("$.enabled", is(true)))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testUpdateShouldReturn404NotFound() throws Exception {
+
+	        LocationDTO locationDTO = new LocationDTO()
+	                .code("ABCDEF")
+	                .cityName("Los Angeles")
+	                .regionName("California")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true)
+	                ;
+
+	        LocationNotFoundException ex = new LocationNotFoundException(locationDTO.getCityName());
+
+	        when(service.updateLocation(any())).thenThrow(ex);
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isNotFound())
+	                .andExpect(jsonPath("$.errorDetails[0]", is(ex.getMessage())))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testUpdateShouldReturn400BadRequest() throws Exception {
+
+	        Location location = new Location()
+	                .cityName("Los Angeles")
+	                .regionName("California")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+	                
+
+	        LocationDTO locationDTO = new LocationDTO()
+	                .cityName(location.getCityName())
+	                .regionName(location.getRegionName())
+	                .countryCode(location.getCountryCode())
+	                .countryName(location.getCountryName())
+	                .enabled(location.isEnabled());
+	                
+
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isBadRequest())
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testUpdateShouldReturn200OK() throws Exception {
+
+	        Location location = new Location()
+	                .code("NYC_USA")
+	                .cityName("New York City")
+	                .regionName("New York")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+
+	        LocationDTO locationDTO = new LocationDTO()
+	                .code(location.getCode())
+	                .cityName(location.getCityName())
+	                .regionName(location.getRegionName())
+	                .countryCode(location.getCountryCode())
+	                .countryName(location.getCountryName())
+	                .enabled(location.isEnabled());
+
+	        when(service.updateLocation(location)).thenReturn(location);
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isOk())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$.code", is("NYC_USA")))
+	                .andExpect(jsonPath("$.city_name", is("New York City")))
+	                .andExpect(jsonPath("$.region_name", is("New York")))
+	                .andExpect(jsonPath("$.country_code", is("US")))
+	                .andExpect(jsonPath("$.country_name", is("United States of America")))
+	                .andExpect(jsonPath("$.enabled", is(true)))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testDeleteLocationShouldReturn404NotFound() throws Exception {
+
+	        String code = "NYC_USA";
+	        String requestURI = END_POINT_PATH + "/" + code;
+
+	        LocationNotFoundException ex = new LocationNotFoundException(code);
+
+	        doThrow(ex).when(service).deletedLocation(code);
+
+	        mockMvc.perform(delete(requestURI))
+	                .andExpect(status().isNotFound())
+	                .andExpect(jsonPath("$.errorDetails[0]", is(ex.getMessage())))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testDeleteLocationShouldReturn204NoContent() throws Exception {
+
+	        String code = "NYC_USA";
+	        String requestURI = END_POINT_PATH + "/" + code;
+
+	        Mockito.doNothing().when(service).deletedLocation(code);
+
+	        mockMvc.perform(delete(requestURI))
+	                .andExpect(status().isNoContent())
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testValidateRequestBodyLocationCodeNotNull() throws Exception {
+
+	        LocationDTO locationDTO = new LocationDTO()
+	                .cityName("New York City")
+	                .regionName("New York")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isBadRequest())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$.errorDetails[0]", is("Location code cannot be null")))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testValidateRequestBodyLocationCodeLength() throws Exception {
+
+	        LocationDTO locationDTO = new LocationDTO()
+	                .code("")
+	                .cityName("New York City")
+	                .regionName("New York")
+	                .countryCode("US")
+	                .countryName("United States of America")
+	                .enabled(true);
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
+	                .andExpect(status().isBadRequest())
+	                .andExpect(content().contentType("application/json"))
+	                .andExpect(jsonPath("$.errorDetails[0]", is("Location code must have 3-12 characters")))
+	                .andDo(print());
+	    }
+
+	    @Test
+	    public void testValidateRequestBodyAllFieldsInvalid() throws Exception {
+	        LocationDTO locationDTO = new LocationDTO()
+	                .regionName("");
+
+	        String bodyContent = mapper.writeValueAsString(locationDTO);
+
+	        MvcResult mvcResult = mockMvc.perform(post(END_POINT_PATH)
+	                .contentType("application/json").content(bodyContent))
+	                .andExpect(status().isBadRequest())
+	                .andExpect(content().contentType("application/json"))
+	                .andDo(print())
+	                .andReturn();
+
+	        String responseBody = mvcResult.getResponse().getContentAsString();
+
+	        assertThat(responseBody).contains("Location code cannot be null");
+	        assertThat(responseBody).contains("City name cannot be null");
+	        assertThat(responseBody).contains("Region name must have 3-128 characters");
+	        assertThat(responseBody).contains("Country name cannot be null");
+	        assertThat(responseBody).contains("Country code cannot be null");
+	    }
 }
