@@ -75,8 +75,6 @@ public class LocationApiControllerTest {
 	                .countryName("United States of America")
 	                .enabled(true);
 	             
-
-
 	        LocationDTO locationDTO = new LocationDTO()
 	                .code(location.getCode())
 	                .cityName(location.getCityName())
@@ -236,7 +234,7 @@ public class LocationApiControllerTest {
 
 	        mockMvc.perform(put(END_POINT_PATH).contentType("application/json").content(bodyContent))
 	                .andExpect(status().isNotFound())
-	                .andExpect(jsonPath("$.errorDetails[0]", is(ex.getMessage())))
+	                .andExpect(jsonPath("$.error[0]", is(ex.getMessage())))
 	                .andDo(print());
 	    }
 
@@ -314,7 +312,7 @@ public class LocationApiControllerTest {
 
 	        mockMvc.perform(delete(requestURI))
 	                .andExpect(status().isNotFound())
-	                .andExpect(jsonPath("$.errorDetails[0]", is(ex.getMessage())))
+	                .andExpect(jsonPath("$.error[0]", is(ex.getMessage())))
 	                .andDo(print());
 	    }
 
@@ -346,7 +344,7 @@ public class LocationApiControllerTest {
 	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
 	                .andExpect(status().isBadRequest())
 	                .andExpect(content().contentType("application/json"))
-	                .andExpect(jsonPath("$.errorDetails[0]", is("Location code cannot be null")))
+	                .andExpect(jsonPath("$.error[0]", is("Location code cannot be null")))
 	                .andDo(print());
 	    }
 
@@ -366,7 +364,7 @@ public class LocationApiControllerTest {
 	        mockMvc.perform(post(END_POINT_PATH).contentType("application/json").content(bodyContent))
 	                .andExpect(status().isBadRequest())
 	                .andExpect(content().contentType("application/json"))
-	                .andExpect(jsonPath("$.errorDetails[0]", is("Location code must have 3-12 characters")))
+	                .andExpect(jsonPath("$.error[0]", is("Location code must have 3-12 characters")))
 	                .andDo(print());
 	    }
 

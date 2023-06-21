@@ -16,48 +16,46 @@ import com.weatherapi.weatherforecast.service.IRealtimeService;
 @Service
 @Transactional
 public class RealtimeServiceImpl implements IRealtimeService {
-	
+
 	@Autowired
 	private RealtimeRepository repository;
 
 	@Autowired
 	private LocationRepository locationRepo;
-	
-	@Override 
-	public RealtimeWeather getByLocation(Location location) throws LocationNotFoundException {
+
+	@Override
+	public RealtimeWeather getByLocation(Location location) {
 		String countryCode = location.getCountryCode();
 		String cityName = location.getCityName();
-		
+
 		RealtimeWeather realtimeWeather = repository.findByCountryCodeAndCity(countryCode, cityName);
 		if (realtimeWeather == null) {
-			throw new LocationNotFoundException("No location found with the given country code and city name");
+			throw new LocationNotFoundException(countryCode, cityName);
 		}
 		return realtimeWeather;
 	}
 
-	
 	@Override
-	public RealtimeWeather getByLocationCode(String locationCode) throws LocationNotFoundException {
-	
+	public RealtimeWeather getByLocationCode(String locationCode) {
+
 		RealtimeWeather realtimeWeather = repository.findByLocationCode(locationCode);
 		if (realtimeWeather == null) {
-			throw new LocationNotFoundException("No location found with the given location code");
+			throw new LocationNotFoundException(locationCode);
 		}
 		return realtimeWeather;
 	}
-
 
 	@Override
 	public RealtimeWeather update(String locationCode, RealtimeWeather realtimeWeather)
-			                                                    throws LocationNotFoundException {
+			throws LocationNotFoundException {
 		Location location = locationRepo.findByCode(locationCode);
-		
+
 		if (location == null) {
 			throw new LocationNotFoundException("No location found with the given location code");
 		}
 		realtimeWeather.setLocation(location);
 		realtimeWeather.setLastUpdated(new Date());
-		
+
 		if (location.getRealtimeWeather() == null) {
 			location.setRealtimeWeather(realtimeWeather);
 			Location locationUpdate = locationRepo.save(location);

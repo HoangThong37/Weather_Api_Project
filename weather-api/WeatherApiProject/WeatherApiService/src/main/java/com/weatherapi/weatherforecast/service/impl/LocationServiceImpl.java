@@ -31,26 +31,23 @@ public class LocationServiceImpl implements ILocationService {
 
 	@Override
 	public Location get(String code) {
-		try {
-			if (code != null) {
-				Location location = repository.findByCode(code);
-				return location;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		Location location = repository.findByCode(code);
+		
+		if (location == null) {
+			throw new LocationNotFoundException(code);
 		}
-		return null;
+		return location;
 	}
 
-	// update
+
 	@Override
 	@Transactional
-	public Location updateLocation(Location locationRequest) throws LocationNotFoundException {
+	public Location updateLocation(Location locationRequest) {
 		
 		Location locationInDB = repository.findByCode(locationRequest.getCode());
 		
 		if (locationInDB == null) {
-           throw new LocationNotFoundException("No location found with the given code" + locationRequest.getCode());
+           throw new LocationNotFoundException(locationRequest.getCode());
 		}
 		
 		locationInDB.setCode(locationRequest.getCode());
@@ -63,11 +60,12 @@ public class LocationServiceImpl implements ILocationService {
 		return repository.save(locationInDB);
 	}
 
+	
 	@Override
-	public void deletedLocation(String code) throws LocationNotFoundException {
+	public void deletedLocation(String code) {
 		try {
 			if (!repository.existsById(code)) {
-				throw new LocationNotFoundException("No Location not found with the given code : " + code);
+				throw new LocationNotFoundException(code);
 			}
 			repository.trashByCode(code);
 		} catch (Exception e) {

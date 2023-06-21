@@ -91,13 +91,6 @@ public class LocationDTO {
 		this.enabled = enabled;
 	}
 	
-//    .code(location.getCode())
-//    .cityName(location.getCityName())
-//    .regionName(location.getRegionName())
-//    .countryCode(location.getCountryCode())
-//    .countryName(location.getCountryName())
-//    .enabled(location.isEnabled());
-	
 	// builder
 	public LocationDTO code(String code) {
 		setCode(code);

@@ -26,12 +26,12 @@ import jakarta.validation.Valid;
 @RequestMapping("/v1/locations")
 public class LocationApiController {
 
-    @Autowired
-	private  ILocationService locationService;
-    
-    @Autowired
-	private  LocationConverter locationConverter;
-	
+	@Autowired
+	private ILocationService locationService;
+
+	@Autowired
+	private LocationConverter locationConverter;
+
 	@PostMapping
 	public ResponseEntity<LocationDTO> createLocation(@RequestBody @Valid LocationDTO location) {
 		Location addLocation = locationService.addLocation(locationConverter.convertToEntity(location));
@@ -50,35 +50,28 @@ public class LocationApiController {
 	}
 
 	@GetMapping("/{code}")
-	public ResponseEntity<?> getLocation(@PathVariable(value = "code", required = false) String code) {
+	public ResponseEntity<?> getLocation(@PathVariable(value = "code", required = false) String code)
+			throws LocationNotFoundException {
 		Location location = locationService.get(code);
-		if (location == null) {
-			return ResponseEntity.notFound().build(); // return 204: no content
-		}
-		return ResponseEntity.ok(location);
+
+		return ResponseEntity.ok(locationConverter.convertToDTO(location));
 	}
-	
+
 	// update location
 	@PutMapping
-	public ResponseEntity<?> updateLocation(@RequestBody @Valid LocationDTO locationDTO) throws LocationNotFoundException {
-		try {
-			Location updateLocation = locationService.updateLocation(locationConverter.convertToEntity(locationDTO));
-			
-			return ResponseEntity.ok(locationConverter.convertToDTO(updateLocation));
-		} catch (LocationNotFoundException e) {
-			return ResponseEntity.notFound().build(); // return 204: no content
-		}
+	public ResponseEntity<?> updateLocation(@RequestBody @Valid LocationDTO locationDTO) {
+		Location updateLocation = locationService.updateLocation(locationConverter.convertToEntity(locationDTO));
+
+		return ResponseEntity.ok(locationConverter.convertToDTO(updateLocation));
+
 	}
-	
+
 	// delete location
 	@DeleteMapping("/{code}")
 	public ResponseEntity<?> deleteLocation(@PathVariable(value = "code", required = false) String code) {
-		try {
-			locationService.deletedLocation(code);
-			
-			return ResponseEntity.noContent().build(); // ko còn gtri
-		} catch (Exception e) {
-			return ResponseEntity.notFound().build(); // return 204: no content
-		}
+		locationService.deletedLocation(code);
+
+		return ResponseEntity.noContent().build(); // ko còn gtri
+
 	}
 }
