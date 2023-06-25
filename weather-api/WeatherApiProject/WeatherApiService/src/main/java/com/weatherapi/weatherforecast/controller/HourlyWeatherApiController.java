@@ -111,7 +111,7 @@ public class HourlyWeatherApiController {
 		} catch (LocationNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
-//		return ResponseEntity.accepted().build(); // mã trạng thái `202 Accepted` và không có nội dung thân của phản hồi
+        //	 ResponseEntity.accepted().build(); // mã trạng thái `202 Accepted` và không có nội dung thân của phản hồi.
 	}
 
 }

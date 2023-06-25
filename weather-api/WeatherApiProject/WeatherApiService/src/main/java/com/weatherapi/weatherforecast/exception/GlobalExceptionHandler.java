@@ -30,6 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	
+	// lỗi 500
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
@@ -44,6 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return errorDTO;
 	}
 	
+	// lỗi 400 : request fail
 	@ExceptionHandler(BadRequestException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
@@ -57,6 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		LOGGER.error(exception.getMessage(), exception);
 		return errorDTO;
 	}
+	
 	
 	@ExceptionHandler(LocationNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -84,7 +87,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		errorDTO.setTimestamp(new Date());
 		errorDTO.setStatus(HttpStatus.BAD_REQUEST.value());
 		errorDTO.setPath(request.getServletPath());
-		//errorDTO.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
 		
 		var constraintViolation = violationException.getConstraintViolations();
 		
@@ -96,6 +98,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return errorDTO;
 	}
 
+	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {

@@ -16,19 +16,19 @@ public class LocationConverter {
     @Autowired
     private ModelMapper modelMapper;
 
-    // entity -> dto
+    // convert entity -> dto
     public LocationDTO convertToDTO(Location entity) {
     	LocationDTO dto = modelMapper.map(entity, LocationDTO.class);
         return dto;
     }
 
-    // dto -> entity
+    // convert dto -> entity
     public Location convertToEntity(LocationDTO dto) {
     	Location entity = modelMapper.map(dto, Location.class);
         return entity;
     }
     
-    // dto -> entity
+    // convert List<dto> -> List<entity> 
     public List<LocationDTO> listEntityToListDTO(List<Location> listEntity) {
     	List<LocationDTO> listLocation = new ArrayList<>();
     	for(Location item : listEntity) {

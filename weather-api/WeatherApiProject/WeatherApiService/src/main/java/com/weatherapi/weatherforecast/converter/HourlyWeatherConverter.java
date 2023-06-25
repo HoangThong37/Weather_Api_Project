@@ -18,7 +18,7 @@ public class HourlyWeatherConverter {
     @Autowired
     private ModelMapper modelMapper;
 
-    // entity -> dto
+    // convert entity -> dto
     public HourlyWeatherListDTO convertToDTO(List<HourlyWeather> hourlyForecast) {
     	Location location = hourlyForecast.get(0).getId().getLocation();
     	
@@ -32,9 +32,10 @@ public class HourlyWeatherConverter {
         return result;
     }
     
-    // DTO -> ENTITY
+    // convert dto -> entity
     public List<HourlyWeather> convertToEntity(List<HourlyWeatherDTO> listHourlyWeatherDTO) {
         return listHourlyWeatherDTO.stream().map(dto -> modelMapper.map(dto, HourlyWeather.class))
         		                   .collect(Collectors.toList());
     }
+    
 }

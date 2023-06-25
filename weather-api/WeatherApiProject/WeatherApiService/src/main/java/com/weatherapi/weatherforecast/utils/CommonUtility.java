@@ -17,7 +17,7 @@ public class CommonUtility {
         }
 
         LOGGER.info("Client's IP Address: " + ip);
-
+        
         return ip;
     }
 }

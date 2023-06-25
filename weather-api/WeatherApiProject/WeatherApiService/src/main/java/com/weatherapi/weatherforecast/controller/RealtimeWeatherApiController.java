@@ -15,7 +15,6 @@ import com.weatherapi.weatherforecast.common.Location;
 import com.weatherapi.weatherforecast.common.RealtimeWeather;
 import com.weatherapi.weatherforecast.converter.RealtimeWeatherConverter;
 import com.weatherapi.weatherforecast.exception.GeoLocationException;
-import com.weatherapi.weatherforecast.exception.LocationNotFoundException;
 import com.weatherapi.weatherforecast.service.IGeoLocationService;
 import com.weatherapi.weatherforecast.service.IRealtimeService;
 import com.weatherapi.weatherforecast.utils.CommonUtility;
@@ -38,12 +37,12 @@ public class RealtimeWeatherApiController {
 	@Autowired
 	private RealtimeWeatherConverter realtimeWeatherConverter;
 
+	// get Location
 	@GetMapping
 	public ResponseEntity<?> getRealtimeByIPAddress(HttpServletRequest request) throws Exception {
-		// get Location
 		String ipAddress = CommonUtility.getIPAddress(request);
 		try {
-			Location location = locationService.getLocation(ipAddress); //
+			Location location = locationService.getLocation(ipAddress); 
 			RealtimeWeather realtimeWeather = realtimeService.getByLocation(location);
 
 			return ResponseEntity.ok(realtimeWeatherConverter.convertToDTO(realtimeWeather));
@@ -54,22 +53,23 @@ public class RealtimeWeatherApiController {
 		}
 	}
 
+	
 	@GetMapping("/{locationCode}")
 	public ResponseEntity<?> getRealtimeWeatherByLocationCode(@PathVariable(name = "locationCode") String locationCode)
-			throws Exception {
+			                                                                                       throws Exception {
 
 		RealtimeWeather realtime = realtimeService.getByLocationCode(locationCode);
-
 		return ResponseEntity.ok(realtimeWeatherConverter.convertToDTO(realtime));
 	}
 
+	
 	@PutMapping("/{locationCode}")
 	public ResponseEntity<?> updateRealtimeWeather(@PathVariable(name = "locationCode") String locationCode,
-			@RequestBody @Valid RealtimeWeather realtimeWeather) {
+			                                       @RequestBody @Valid RealtimeWeather realtimeWeather) {
+		
 		realtimeWeather.setLocationCode(locationCode);
 		RealtimeWeather updateRealtimeWeather = realtimeService.update(locationCode, realtimeWeather);
-
+		
 		return ResponseEntity.ok(realtimeWeatherConverter.convertToDTO(updateRealtimeWeather));
-
 	}
 }

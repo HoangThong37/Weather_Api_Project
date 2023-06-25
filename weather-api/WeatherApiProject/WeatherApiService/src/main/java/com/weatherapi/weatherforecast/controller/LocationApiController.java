@@ -49,6 +49,7 @@ public class LocationApiController {
 		return ResponseEntity.ok(locationConverter.listEntityToListDTO(list));
 	}
 
+	// get location
 	@GetMapping("/{code}")
 	public ResponseEntity<?> getLocation(@PathVariable(value = "code", required = false) String code)
 			throws LocationNotFoundException {
